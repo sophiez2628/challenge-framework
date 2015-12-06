@@ -16,13 +16,30 @@ function traverse(node, func) {
   }
 };
 
+//check for rough structure - if statement inside of for loop
+
 function analyzeCode(code) {
+  var varDeclaration = false;
+  var forLoop = false;
   var ast = esprima.parse(code);
   traverse(ast, function(node) {
-    console.log(node.type);
-  });
-};
+    // check for for loop and a variable declaration
+    if (node.kind == "var") {
+      varDeclaration = true;
+    }
+    if (node.type === 'ForStatement') {
+      forLoop = true;
+    }
 
-function processResults(results) {
+    // check for while loop and if statement
+  });
+
+  if (varDeclaration === false && forLoop === false) {
+    console.log("This program MUST use a 'for loop' and a variable declaration.")
+  } else if (varDeclaration === false) {
+    console.log("This program MUST use a variable declaration.")
+  } else if (forLoop === false) {
+    console.log("This program MUST use a 'for loop'.")
+  };
 
 };
