@@ -21,25 +21,43 @@ function traverse(node, func) {
 function analyzeCode(code) {
   var varDeclaration = false;
   var forLoop = false;
+  var whileLoop = false;
+  var ifStatement = false;
+
   var ast = esprima.parse(code);
   traverse(ast, function(node) {
     // check for for loop and a variable declaration
-    if (node.kind == "var") {
+    if (node.kind === 'var') {
       varDeclaration = true;
     }
     if (node.type === 'ForStatement') {
       forLoop = true;
     }
-
     // check for while loop and if statement
+    if (node.type === 'WhileStatement') {
+      whileLoop = true;
+    }
+
+    if (node.type === 'IfStatement') {
+      ifStatement = true;
+    }
+
   });
 
   if (varDeclaration === false && forLoop === false) {
-    console.log("This program MUST use a 'for loop' and a variable declaration.")
+    console.log("This program MUST use a 'for loop' and a variable declaration.");
   } else if (varDeclaration === false) {
-    console.log("This program MUST use a variable declaration.")
+    console.log("This program MUST use a variable declaration.");
   } else if (forLoop === false) {
-    console.log("This program MUST use a 'for loop'.")
-  };
+    console.log("This program MUST use a 'for loop'.");
+  }
+  
+  if (whileLoop && ifStatement) {
+    console.log("This program MUST NOT use a 'while loop' or an 'if statement'.");
+  } else if (whileLoop) {
+    console.log("This program MUST NOT use a 'while loop'.");
+  } else if (ifStatement) {
+    console.log("This program MUST NOT use an 'if statement'.");
+  }
 
 };
