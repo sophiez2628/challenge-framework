@@ -16,13 +16,13 @@ function traverse(node, func) {
   }
 };
 
-//check for rough structure - if statement inside of for loop
 
 function analyzeCode(code) {
   var varDeclaration = false;
   var forLoop = false;
   var whileLoop = false;
   var ifStatement = false;
+  var ifStatementInsideLoop = false;
 
   var ast = esprima.parse(code);
   traverse(ast, function(node) {
@@ -32,6 +32,12 @@ function analyzeCode(code) {
     }
     if (node.type === 'ForStatement') {
       forLoop = true;
+      //check for rough structure - if statement inside of for loop
+      traverse(node, function(node) {
+        if (node.type === 'IfStatement') {
+          ifStatementInsideLoop = true;
+        }
+      });
     }
     // check for while loop and if statement
     if (node.type === 'WhileStatement') {
@@ -42,6 +48,7 @@ function analyzeCode(code) {
       ifStatement = true;
     }
 
+
   });
 
   if (varDeclaration === false && forLoop === false) {
@@ -51,13 +58,17 @@ function analyzeCode(code) {
   } else if (forLoop === false) {
     console.log("This program MUST use a 'for loop'.");
   }
-  
+
   if (whileLoop && ifStatement) {
     console.log("This program MUST NOT use a 'while loop' or an 'if statement'.");
   } else if (whileLoop) {
     console.log("This program MUST NOT use a 'while loop'.");
   } else if (ifStatement) {
     console.log("This program MUST NOT use an 'if statement'.");
+  }
+
+  if (ifStatementInsideLoop === false) {
+    console.log("There should be a 'for loop' and inside of it there should be an 'if statement'");
   }
 
 };
