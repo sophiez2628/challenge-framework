@@ -16,6 +16,27 @@ function traverse(node, func) {
   }
 };
 
+function processResults(results) {
+  if (results["varDeclaration"] === false && results["forLoop"] === false) {
+    console.log("This program MUST use a 'for loop' and a variable declaration.");
+  } else if (results["varDeclaration"] === false) {
+    console.log("This program MUST use a variable declaration.");
+  } else if (results["forLoop"] === false) {
+    console.log("This program MUST use a 'for loop'.");
+  }
+
+  if (results["whileLoop"] && results["ifStatement"]) {
+    console.log("This program MUST NOT use a 'while loop' or an 'if statement'.");
+  } else if (results["whileLoop"]) {
+    console.log("This program MUST NOT use a 'while loop'.");
+  } else if (results["ifStatement"]) {
+    console.log("This program MUST NOT use an 'if statement'.");
+  }
+
+  if (results["ifStatementInsideLoop"] === false) {
+    console.log("There should be a 'for loop' with an 'if statement' inside of it");
+  }
+};
 
 function analyzeCode(code) {
   var varDeclaration = false;
@@ -48,27 +69,12 @@ function analyzeCode(code) {
       ifStatement = true;
     }
 
-
   });
 
-  if (varDeclaration === false && forLoop === false) {
-    console.log("This program MUST use a 'for loop' and a variable declaration.");
-  } else if (varDeclaration === false) {
-    console.log("This program MUST use a variable declaration.");
-  } else if (forLoop === false) {
-    console.log("This program MUST use a 'for loop'.");
-  }
-
-  if (whileLoop && ifStatement) {
-    console.log("This program MUST NOT use a 'while loop' or an 'if statement'.");
-  } else if (whileLoop) {
-    console.log("This program MUST NOT use a 'while loop'.");
-  } else if (ifStatement) {
-    console.log("This program MUST NOT use an 'if statement'.");
-  }
-
-  if (ifStatementInsideLoop === false) {
-    console.log("There should be a 'for loop' and inside of it there should be an 'if statement'");
-  }
+  processResults({"varDeclaration": varDeclaration,
+                  "forLoop": forLoop,
+                  "whileLoop": whileLoop,
+                  "ifStatement": ifStatement,
+                  "ifStatementInsideLoop": ifStatementInsideLoop})
 
 };
