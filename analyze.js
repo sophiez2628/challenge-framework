@@ -17,25 +17,35 @@ function traverse(node, func) {
 };
 
 function processResults(results) {
+  var output = []
   if (results["varDeclaration"] === false && results["forLoop"] === false) {
-    console.log("This program MUST use a 'for loop' and a variable declaration.");
+    output.push("This program MUST use a 'for loop' and a variable declaration.");
+
   } else if (results["varDeclaration"] === false) {
-    console.log("This program MUST use a variable declaration.");
+    output.push("This program MUST use a variable declaration.");
+
   } else if (results["forLoop"] === false) {
-    console.log("This program MUST use a 'for loop'.");
+    output.push("This program MUST use a 'for loop'.");
+
   }
 
   if (results["whileLoop"] && results["ifStatement"]) {
-    console.log("This program MUST NOT use a 'while loop' or an 'if statement'.");
+    output.push("This program MUST NOT use a 'while loop' or an 'if statement'.");
+
   } else if (results["whileLoop"]) {
-    console.log("This program MUST NOT use a 'while loop'.");
+    output.push("This program MUST NOT use a 'while loop'.");
+
   } else if (results["ifStatement"]) {
-    console.log("This program MUST NOT use an 'if statement'.");
+    output.push("This program MUST NOT use an 'if statement'.");
+
   }
 
   if (results["ifStatementInsideLoop"] === false) {
-    console.log("There should be a 'for loop' with an 'if statement' inside of it");
+    output.push("There should be a 'for loop' with an 'if statement' inside of it");
   }
+
+  return output;
+
 };
 
 function analyzeCode(code) {
@@ -71,10 +81,25 @@ function analyzeCode(code) {
 
   });
 
-  processResults({"varDeclaration": varDeclaration,
+  return processResults({"varDeclaration": varDeclaration,
                   "forLoop": forLoop,
                   "whileLoop": whileLoop,
                   "ifStatement": ifStatement,
                   "ifStatementInsideLoop": ifStatementInsideLoop})
 
 };
+
+
+$(function() {
+  editor.getSession().on('change', function(e) {
+      var code = editor.getValue();
+      try {
+        var results = analyzeCode(code);
+      } catch(err) {
+        $(".output").text(err.description);
+      }
+      if (results) {
+        $(".output").text(results);
+      }
+  });
+})
